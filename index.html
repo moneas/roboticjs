@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title> Robotics position</title>
+  
+  
+  <script type='text/javascript' src='http://code.jquery.com/jquery-1.6.2.js'></script>
+    <script type='text/javascript' src="https://jquery-rotate.googlecode.com/files/jquery.rotate.1-1.js"></script>
+
+  
+  <link rel="stylesheet" type="text/css" href="/css/normalize.css">
+  
+  
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  
+  <style type='text/css'>
+  .drop-target{
+    width:500px;
+    height:500px;
+    background:whitesmoke url('https://s3.amazonaws.com/com.appgrinders.test/images/grid_20.png') repeat;
+  }
+    div
+    {
+    width:40px;
+    height:40px;
+    background: url('robot.png') no-repeat;
+    background-size: cover;
+    }
+  </style>
+  
+
+
+
+<script type='text/javascript'>
+function rotatecntrl(sel) {
+            var rotate = "rotate(" + sel.value + "deg)";
+
+            var trans = "all 0.3s ease-out";
+
+            $("#box").css({
+
+                "-webkit-transform": rotate,
+
+                "-moz-transform": rotate,
+
+                "-o-transform": rotate,
+
+                "msTransform": rotate,
+
+                "transform": rotate,
+
+                "-webkit-transition": trans,
+
+                "-moz-transition": trans,
+
+                "-o-transition": trans,
+
+                "transition": trans
+
+            });
+             $.cookie('rotate', sel.value);
+
+        }//<![CDATA[
+$(window).load(function(){
+jQuery.cookie = function (key, value, options) {
+
+    // key and at least value given, set cookie...
+    if (arguments.length > 1 && String(value) !== "[object Object]") {
+        options = jQuery.extend({}, options);
+
+        if (value === null || value === undefined) {
+            options.expires = -1;
+        }
+
+        if (typeof options.expires === 'number') {
+            var days = options.expires, t = options.expires = new Date();
+            t.setDate(t.getDate() + days);
+        }
+
+        value = String(value);
+
+        return (document.cookie = [
+            encodeURIComponent(key), '=',
+            options.raw ? value : encodeURIComponent(value),
+            options.expires ? '; expires=' + options.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
+            options.path ? '; path=' + options.path : '',
+            options.domain ? '; domain=' + options.domain : '',
+            options.secure ? '; secure' : ''
+        ].join(''));
+    }
+
+    // key and possibly options given, get cookie...
+    options = value || {};
+    var result, decode = options.raw ? function (s) { return s; } : decodeURIComponent;
+    return (result = new RegExp('(?:^|; )' + encodeURIComponent(key) + '=([^;]*)').exec(document.cookie)) ? decode(result[1]) : null;
+};
+
+//------------------------------------------------END of plugin!---------------------------------
+$('#box').draggable({
+   grid: [20, 20],
+   snap: ".drop-target",
+   stop: function(event, ui) { 
+       $.cookie('posx', $(this).css('left'));
+       $.cookie('posy', $(this).css('top'));
+       }
+});
+
+if($.cookie('posx') != null){
+    $('#box').css('left', $.cookie('posx'));
+}else{
+    $('#box').css('left', '0px');
+}
+if($.cookie('posy') != null){
+    $('#box').css('top', $.cookie('posy'));
+}else{
+    $('#box').css('top', '0px');
+}
+
+if($.cookie('posx') != null){
+  
+}
+if($.cookie('rotate') != null){
+  var rotate = "rotate(" + $.cookie('rotate') + "deg)";
+
+            var trans = "all 0.3s ease-out";
+
+            $("#box").css({
+
+                "-webkit-transform": rotate,
+
+                "-moz-transform": rotate,
+
+                "-o-transform": rotate,
+
+                "msTransform": rotate,
+
+                "transform": rotate,
+
+                "-webkit-transition": trans,
+
+                "-moz-transition": trans,
+
+                "-o-transition": trans,
+
+                "transition": trans
+
+            });
+  $("#selectrotate").val($.cookie('rotate'));
+}
+
+});//]]> 
+
+ 
+
+</script>
+
+</head>
+<body>
+  <div class="drop-target">
+    <div class="drag-item" style="" id="box"></div>
+</div>
+Rotate :
+
+        <select id="selectrotate" onchange="rotatecntrl(this);">
+
+            <option value="0">North</option>
+
+            <option value="90">East</option>
+
+            <option value="180">South</option>
+
+            <option value="270">West</option>
+
+        </select>
+</body>
+<script type="text/javascript">
+  $(document).ready(function(){
+
+  })
+</script>
+</html>
+
