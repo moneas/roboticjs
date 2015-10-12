@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<?php session_start(); ?>
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -61,69 +61,51 @@ function rotatecntrl(sel) {
                 "transition": trans
 
             });
-             $.cookie('rotate', sel.value);
+             $.post( "save.php", { rotate: sel.value } ); 
 
         }//<![CDATA[
 $(window).load(function(){
-jQuery.cookie = function (key, value, options) {
-
-    // key and at least value given, set cookie...
-    if (arguments.length > 1 && String(value) !== "[object Object]") {
-        options = jQuery.extend({}, options);
-
-        if (value === null || value === undefined) {
-            options.expires = -1;
-        }
-
-        if (typeof options.expires === 'number') {
-            var days = options.expires, t = options.expires = new Date();
-            t.setDate(t.getDate() + days);
-        }
-
-        value = String(value);
-
-        return (document.cookie = [
-            encodeURIComponent(key), '=',
-            options.raw ? value : encodeURIComponent(value),
-            options.expires ? '; expires=' + options.expires.toUTCString() : '', // use expires attribute, max-age is not supported by IE
-            options.path ? '; path=' + options.path : '',
-            options.domain ? '; domain=' + options.domain : '',
-            options.secure ? '; secure' : ''
-        ].join(''));
-    }
-
-    // key and possibly options given, get cookie...
-    options = value || {};
-    var result, decode = options.raw ? function (s) { return s; } : decodeURIComponent;
-    return (result = new RegExp('(?:^|; )' + encodeURIComponent(key) + '=([^;]*)').exec(document.cookie)) ? decode(result[1]) : null;
-};
-
-//------------------------------------------------END of plugin!---------------------------------
 $('#box').draggable({
    grid: [20, 20],
    snap: ".drop-target",
-   stop: function(event, ui) { 
-       $.cookie('posx', $(this).css('left'));
-       $.cookie('posy', $(this).css('top'));
+   stop: function(event, ui) {
+      $.post( "save.php", { posx: $(this).css('left'), posy: $(this).css('top') } ); 
        }
 });
-
-if($.cookie('posx') != null){
-    $('#box').css('left', $.cookie('posx'));
+<?php 
+  if(isset($_SESSION['posx'])){
+    echo 'var posx = "'.$_SESSION['posx'].'";';
+  }
+  else{
+    echo 'var posx = 0;';
+  }
+  if(isset($_SESSION['posy'])){
+    echo 'var posy = "'.$_SESSION['posy'].'";';
+  }
+  else{
+    echo 'var posy = 0;';
+  }
+  if(isset($_SESSION['rotate'])){
+    echo 'var varrotate = '.$_SESSION['rotate'].';';
+  }
+  else{
+    echo 'var varrotate = 0;';
+  }
+?>
+if(posx != 0){
+    $('#box').css('left', posx);
 }else{
     $('#box').css('left', '0px');
 }
-if($.cookie('posy') != null){
-    $('#box').css('top', $.cookie('posy'));
+if(posy != 0){
+    $('#box').css('top', posy);
 }else{
     $('#box').css('top', '0px');
 }
 
-if($.cookie('posx') != null){
   
-}
-if($.cookie('rotate') != null){
-  var rotate = "rotate(" + $.cookie('rotate') + "deg)";
+if(varrotate != 0){
+  var rotate = "rotate(" + varrotate + "deg)";
 
             var trans = "all 0.3s ease-out";
 
@@ -148,7 +130,7 @@ if($.cookie('rotate') != null){
                 "transition": trans
 
             });
-  $("#selectrotate").val($.cookie('rotate'));
+  $("#selectrotate").val(varrotate);
 }
 
 });//]]> 
