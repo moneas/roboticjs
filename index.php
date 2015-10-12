@@ -1,4 +1,18 @@
-<?php session_start(); ?>
+<?php session_start(); 
+include_once('db.php'); 
+if(!isset($_SESSION['started'])){
+  //we save a new session
+  $ip = $_SERVER['REMOTE_ADDR'];
+  $starttime = date('Y-m-d H:i:s');
+  mysqli_query($con,"INSERT INTO tb_session (session_start,session_finish,ip_address) VALUES ('$starttime','starttime','$ip')");
+  if (mysqli_connect_errno())
+  {
+  echo "SQL Error";
+  }
+  $_SESSION['sessid'] = $con->insert_id;
+  $_SESSION['started'] = 1;
+}
+?>
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -6,15 +20,13 @@
   
   
   <script type='text/javascript' src='http://code.jquery.com/jquery-1.6.2.js'></script>
-    <script type='text/javascript' src="https://jquery-rotate.googlecode.com/files/jquery.rotate.1-1.js"></script>
+  <script type='text/javascript' src="https://jquery-rotate.googlecode.com/files/jquery.rotate.1-1.js"></script>
 
   
-  <link rel="stylesheet" type="text/css" href="/css/normalize.css">
   
   
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.js"></script>
   
-  <link rel="stylesheet" type="text/css" href="/css/result-light.css">
   
   <style type='text/css'>
   .drop-target{
@@ -61,16 +73,31 @@ function rotatecntrl(sel) {
                 "transition": trans
 
             });
-             $.post( "save.php", { rotate: sel.value } ); 
+            savePos();
+}
 
-        }//<![CDATA[
+function savePos(){
+  var xpos = $('#box').css('left');
+  var ypos = $('#box').css('top');
+  var varrotate = $('#selectrotate').val();
+  var varsessid = '<?php echo $_SESSION['sessid'] ;?>';
+  $.post( "save.php", { posx: xpos, posy: ypos, rotate : varrotate, sessid : varsessid}); 
+  return true;
+}
+
+function updateFinish(){
+    var varsessid = '<?php echo $_SESSION['sessid'] ;?>';
+    $.post( "update.php", {sessid : varsessid}); 
+    return true;
+}
+
 $(window).load(function(){
 $('#box').draggable({
    grid: [20, 20],
    snap: ".drop-target",
    stop: function(event, ui) {
-      $.post( "save.php", { posx: $(this).css('left'), posy: $(this).css('top') } ); 
-       }
+    savePos();
+    }
 });
 <?php 
   if(isset($_SESSION['posx'])){
@@ -132,7 +159,9 @@ if(varrotate != 0){
             });
   $("#selectrotate").val(varrotate);
 }
-
+setInterval(function () {
+    updateFinish();
+},3000); 
 });//]]> 
 
  
